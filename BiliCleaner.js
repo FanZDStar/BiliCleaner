@@ -1,8 +1,9 @@
+// filepath: [BiliCleaner.js](http://_vscodecontentref_/0)
 /*
  * @Author: ourEDA MaMing
  * @Date: 2025-05-02 00:11:38
  * @LastEditors: ourEDA MaMing
- * @LastEditTime: 2025-05-12 15:33:46
+ * @LastEditTime: 2025-05-12 15:40:57
  * @FilePath: \BiliCleaner\BiliCleaner.js
  * @Description: 李猴啊
  * 
@@ -12,7 +13,7 @@
 // ==UserScript==
 // @name         B站界面清理助手
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      2.0
 // @description  屏蔽B站界面中的"新版反馈"、"客服"按钮和播放控制按钮
 // @author       ourEDA
 // @match        *://*.bilibili.com/*
@@ -34,9 +35,14 @@
                 display: none !important;
             }
             
-            /* 隐藏客服按钮 */
+            /* 隐藏客服按钮 - 扩展选择器 */
             .primary-btn[href*="v/customer-service"],
-            a[href*="v/customer-service"] {
+            a[href*="v/customer-service"],
+            a[href*="/blackboard/help.html"],
+            a.customer-service,
+            .customer-service,
+            .fixed-sidenav-storage-item,
+            [title="帮助反馈"] {
                 display: none !important;
             }
             
@@ -81,8 +87,15 @@
             el.style.display = 'none';
         });
 
-        // 查找并移除客服按钮
-        document.querySelectorAll('a[href*="v/customer-service"]').forEach(el => {
+        // 查找并移除客服按钮 - 扩展查询选择器
+        document.querySelectorAll(`
+            a[href*="v/customer-service"],
+            a[href*="/blackboard/help.html"],
+            a.customer-service,
+            .customer-service,
+            .fixed-sidenav-storage-item,
+            [title="帮助反馈"]
+        `).forEach(el => {
             el.style.display = 'none';
         });
 
@@ -114,6 +127,15 @@
                 }
                 svg.style.display = 'none';
             }
+        });
+        
+        // 根据SVG内容隐藏客服图标
+        document.querySelectorAll('svg.customer-service-icon, svg[class*="customer-service"]').forEach(svg => {
+            const parentElement = svg.closest('a, button, div');
+            if (parentElement) {
+                parentElement.style.display = 'none';
+            }
+            svg.style.display = 'none';
         });
     };
 
